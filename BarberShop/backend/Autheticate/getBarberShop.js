@@ -4,9 +4,16 @@ require('dotenv').config()
 const BarberShop = require('../models/BarberShop')
 
 async function getBarberShopByToken(req, res){
-    const token = await getToken(req, res)
     try{
+        const token = await getToken(req)
+        console.log(token)
+        if(!token){
+            return res.status(401).json({ message: 'Token inválido ou expirado'})
+        }
         const decoded = jwt.verify(token, process.env.SECRET)
+        if(!decoded){
+            return res.status(401).json({ message: 'Token inválido ou expirado'})
+        }
         const userId = decoded.id
         const user = await BarberShop.findOne({where: {id: userId}})
         if(!user){
@@ -15,7 +22,7 @@ async function getBarberShopByToken(req, res){
         }
         return user
     }catch(error){
-        return res.status(401).json({ message: 'Token inválido ou expirado'})
+        res.status(401).json({ message: 'Token inválido ou expirado'})
     }
 }
 

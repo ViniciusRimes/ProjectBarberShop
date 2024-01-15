@@ -85,6 +85,7 @@ module.exports = class BarberShopController{
     static async getUser(req, res){
         try{
             const user = await getBarberShop(req, res)
+            user.password = ''
             res.status(200).json({message: {user: user }})
         }catch(error){
             res.status(400).json({message: "Erro: " + error})
