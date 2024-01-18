@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const BarberShopController = require('../controllers/BarberShopController')
 const {body} = require("express-validator")
+const verifyIsAdmin = require('../Autheticate/verifyIsAdmin')
 
 router.post('/register', [
     body('name').notEmpty().withMessage("O campo NOME não pode ser nulo!"),
@@ -19,7 +20,8 @@ router.post('/login', [
     body('email').notEmpty().withMessage("O campo EMAIL não pode ser nulo!"),
     body('password').notEmpty().withMessage("O campo SENHA não pode ser nulo!")
 ], BarberShopController.login)
-router.get('/getuser', BarberShopController.getUser)
+router.get('/getuser', verifyIsAdmin, BarberShopController.getUser)
+router.get('/getallclients', verifyIsAdmin, BarberShopController.getAllClients)
 
 
 module.exports = router
