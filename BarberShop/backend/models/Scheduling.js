@@ -14,4 +14,7 @@ const Scheduling = conn.define('Scheduling', {
 })
 const Client = require('./Client')
 Client.hasMany(Scheduling)
+const Services = require('./Services')
+Scheduling.belongsTo(Services)
+
 module.exports = Scheduling

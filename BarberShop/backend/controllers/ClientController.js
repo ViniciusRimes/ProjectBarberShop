@@ -2,7 +2,8 @@ const createToken = require('../Autheticate/createToken')
 const Client = require('../models/Client')
 const {validationResult} = require("express-validator")
 const bcryptjs = require('bcryptjs')
-
+const getClient = require('../Autheticate/getClient')
+const {Op} = require('sequelize')
 module.exports = class ClientController{
     static async register(req, res){
         /*const errors = validationResult(req)
@@ -56,5 +57,67 @@ module.exports = class ClientController{
         }catch(error){
             res.status(500).json({message: "Erro:" + error})
         }
+    }
+    static async getClient(req, res){
+        try{
+            const client = await getClient(req, res)
+            if(!client){
+                return
+            }
+            const userExists = await Client.findOne({where: {id: client.id}})
+            if(!userExists){
+                res.status(400).json({message: "Usuário não encontrado!"})
+                return
+            }
+            userExists.password = ''
+            res.status(200).send(userExists)
+        }catch(error){
+            res.status(500).json({message: "Erro:" + error})
+        }
+    }
+    static async editClient(req, res){
+        try{
+            const errors = validationResult(req)
+            if(!errors.isEmpty()){
+                res.status(400).json({message: {errors: errors.array()}})
+                return
+            }
+            const client = await getClient(req, res)
+            if(!client){
+                return
+            }
+            const userExists = await Client.findOne({where: {id: client.id}})
+            if(!userExists){
+                res.status(400).json({message: "Usuário não encontrado!"})
+                return
+            }
+            const {name, phone, password} = req.body
+            const img = req.file
+            
+            const phoneExists = await Client.findOne({where: {
+                phone: {
+                    [Op.like]: phone
+                }
+            }})
+            if(phoneExists){
+                res.status(400).json({message: "O telefone digitado já está cadastrado por outro usuário!"})
+                return
+            }
+            let passwordHash
+            if(password && !bcryptjs.compareSync(password, userExists.password)){
+                const salt = bcryptjs.genSaltSync(10)
+                passwordHash = bcryptjs.hashSync(password, salt)
+            }
+            
+
+            await Client.update({
+                name: name || userExists.name, phone: phone || userExists.phone, password: passwordHash || userExists.password, img: img || userExists.img
+            }, {where: {id: userExists.id}})
+           
+            res.status(201).json({message: "Usuário editado!"})
+        }catch(error){
+            res.status(400).json({message: "Erro: " + error})
+            console.log(error)
+        }   
     }
 }

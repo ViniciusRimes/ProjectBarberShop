@@ -4,7 +4,10 @@ const generateCnpj = require('../helpers/GenerationCnpj')
 const bcryptjs = require('bcryptjs')
 const createToken = require('../Autheticate/createToken')
 const getBarberShop = require('../Autheticate/getBarberShop')
-
+const Client = require('../models/Client')
+const SchedulingEvent = require("../models/SchedulingEvent")
+const {format} = require("date-fns")
+const Scheduling = require('../models/Scheduling')
 
 module.exports = class BarberShopController{
     static async register(req, res){
@@ -89,6 +92,39 @@ module.exports = class BarberShopController{
             res.status(200).json({message: {user: user }})
         }catch(error){
             res.status(400).json({message: "Erro: " + error})
+        }
+    }
+    static async getAllClients(req, res){
+        try{
+            const results = await Client.findAll()
+            
+            const clients = []
+            for(const client of results){
+                const lastSchedulingEvent = await SchedulingEvent.findOne({
+                    order: [['createdAt', 'DESC']],
+                    where: {
+                        ClientId: client.id
+                    }
+                })
+                let lastScheduling
+                // let formattedDate
+                if (lastSchedulingEvent) {
+                    lastScheduling = await Scheduling.findOne({where: {id: lastSchedulingEvent.SchedulingId}})
+
+                    // formattedDate = format(new Date(`${lastScheduling.date}T00:00:00Z`), 'dd-MM-yyyy')
+                    
+                }
+                clients.push({
+                    name: client.name,
+                    phone: client.phone,
+                    lastScheduling: lastScheduling ? lastScheduling.date : null
+                })
+            }
+            
+            res.status(200).send(clients)
+        }catch(error){
+            res.status(400).json({message: "Erro: " + error})
+            console.log(error)
         }
     }
 }

@@ -11,12 +11,16 @@ const SchedulingRoutes = require('./routes/SchedulingRoutes')
 app.use('/scheduling', SchedulingRoutes )
 const ClientRoutes = require('./routes/ClientRoutes')
 app.use('/client', ClientRoutes )
+const ServicesRoutes = require('./routes/ServicesRoutes')
+app.use('/services', ServicesRoutes )
 
 
 //models
 const BarberShop = require('./models/BarberShop')
 const Scheduling = require('./models/Scheduling')
 const SchedulingEvent = require('./models/SchedulingEvent')
+const Services = require('./models/Services')
+
 
 const conn = require('./db/conn')
 const { ExpressValidator } = require("express-validator")

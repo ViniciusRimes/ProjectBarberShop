@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const getToken = require('../helpers/getToken')
+const getToken = require('../Autheticate/getToken')
 require('dotenv').config()
 
 async function verifyOneToken(req, res, next){

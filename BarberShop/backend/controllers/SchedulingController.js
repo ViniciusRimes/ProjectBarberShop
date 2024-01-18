@@ -1,7 +1,10 @@
 const Scheduling = require('../models/Scheduling')
+const SchedulingEvent = require('../models/SchedulingEvent')
 const {validationResult} = require("express-validator")
 const {Op} = require('sequelize')
 const {format, getDay} = require('date-fns')
+const getClient = require('../Autheticate/getClient')
+const Services = require('../models/Services')
 
 module.exports = class SchedulingController{
     static async generateSchedules(req, res){
@@ -55,13 +58,43 @@ module.exports = class SchedulingController{
             console.log(error)
         }
     }
-    static async reserveDate(req, res){
-        const errors = validationResult(req)
-        if(!errors.isEmpty()){
-            res.status(400).json({message: {errors: errors.array()}})
-            return
+    static async reserveTime(req, res){
+        try{
+            const errors = validationResult(req)
+            if(!errors.isEmpty()){
+                res.status(400).json({message: {errors: errors.array()}})
+                return
+            }
+            const {date, time, serviceId} = req.body
+            const user = await getClient(req, res)
+            
+            const availableTime = await Scheduling.findOne({where: {
+                date: {
+                    [Op.eq]: date
+                },
+                time: {
+                    [Op.eq]: time
+                },
+                available: null
+            }})
+            if(!availableTime){
+                res.status(400).json({message: "Horário escolhido não está mais disponível, por favor escolha outro!"})
+                return
+            }
+            const serviceExists = await Services.findOne({where: {id: serviceId}})
+
+            if(!serviceExists){
+                res.status(404).json({message: "Não existe nenhum serviço com este Id!"})
+                return
+            }
+
+            await Scheduling.update({available: true, ClientId: user.id, ServiceId: serviceExists.id}, {where: {id: availableTime.id} })
+            await SchedulingEvent.create({ClientId: user.id, SchedulingId: availableTime.id, ServiceId: serviceExists.id })
+            res.status(200).json({message: "Horário agendado com sucesso!"})
+        }catch(error){
+            res.status(500).json({ message: 'Erro ao agendar horário: ' + error});
+            console.log(error)
         }
-        
     }
 }
 
@@ -113,11 +146,11 @@ function generateSchedules(startDate, endDate, startTime, endTime, intervalMinut
 
     for (const date of dates) {
         for (const time of times) {
-            const [year, month, day] = date.split('-')
-            const [hours, minutes] = time.split(':')
+            // const [year, month, day] = date.split('-')
+            // const [hours, minutes] = time.split(':')
             schedules.push({
-                date: day+"/"+month+"/"+year,
-                time: hours+":"+minutes
+                date: date,
+                time: time
             });
         }
     }
