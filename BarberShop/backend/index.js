@@ -20,6 +20,7 @@ const BarberShop = require('./models/BarberShop')
 const Scheduling = require('./models/Scheduling')
 const SchedulingEvent = require('./models/SchedulingEvent')
 const Services = require('./models/Services')
+const Accounting = require('./models/Accounting')
 
 
 const conn = require('./db/conn')
