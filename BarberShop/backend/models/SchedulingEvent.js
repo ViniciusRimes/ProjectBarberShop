@@ -12,7 +12,11 @@ const SchedulingEvent = conn.define('SchedulingEvent',{
     },
     ClientId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        references: {
+            model: Client,
+            key: 'id',
+        },
+        allowNull: false
     },
     SchedulingId: {
         type: DataTypes.INTEGER,
@@ -20,7 +24,7 @@ const SchedulingEvent = conn.define('SchedulingEvent',{
             model: Scheduling,
             key: 'id',
         },
-        allowNull: false,
+        allowNull: false
     },
     ServiceId: {
         type: DataTypes.INTEGER,
@@ -28,13 +32,17 @@ const SchedulingEvent = conn.define('SchedulingEvent',{
             model: Services,
             key: 'id',
         },
-        allowNull: false,
+        allowNull: false
     },
+    finished: {
+        type: DataTypes.BOOLEAN
+    }
 })
 
-Client.belongsToMany(Scheduling, { through: SchedulingEvent });
-Scheduling.belongsToMany(Client, { through: SchedulingEvent });
-Services.belongsToMany(Client, { through: SchedulingEvent });
-Services.belongsToMany(Scheduling, { through: SchedulingEvent });
+/*
+Client.belongsToMany(Scheduling, { through: {model: SchedulingEvent, unique: false}});
+Scheduling.belongsToMany(Client, { through: {model: SchedulingEvent, unique: false}});
+Services.belongsToMany(Client, { through: {model: SchedulingEvent, unique: false}});
+Services.belongsToMany(Scheduling, { through: {model: SchedulingEvent, unique: false}});*/
 
 module.exports = SchedulingEvent

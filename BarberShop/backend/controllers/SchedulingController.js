@@ -5,6 +5,7 @@ const {Op} = require('sequelize')
 const {format, getDay} = require('date-fns')
 const getClient = require('../Autheticate/getClient')
 const Services = require('../models/Services')
+const AccountingController = require('../controllers/AccountingController')
 
 module.exports = class SchedulingController{
     static async generateSchedules(req, res){
@@ -96,12 +97,92 @@ module.exports = class SchedulingController{
             console.log(error)
         }
     }
+    static async updateSchedules(req, res){
+        try{
+            const schedulingId = req.params.schedulingId
+            const scheduling = await Scheduling.findOne({where: {id: schedulingId}})
+            if(!scheduling){
+                res.status(404).json({message: "Agendamento de horário não encontrado!"})
+                return
+            }
+            if(!scheduling.available){
+                res.status(400).json({message: "O horário não possui clientes agendados, logo não é possível marcá-los como concluído!"})
+                return
+            }
+            await Scheduling.update({finished: true}, {where: {id: scheduling.id}})
+            await SchedulingEvent.update({finished: true}, {where: {SchedulingId: scheduling.id}})
+            res.status(200).json({message: "Serviço prestado com sucesso!"})
+        }catch(error){
+            res.status(500).json({ message: 'Erro ao atualizar serviço: ' + error})
+        }
+    } 
+    static async deleteScheduling(req, res){
+        try{
+            const schedulingId = req.params.schedulingId
+            const scheduling = await Scheduling.findOne({where: {id: schedulingId}})
+            if(!scheduling){
+                res.status(404).json({message: "Agendamento de horário não encontrado!"})
+                return
+            }
+            await Scheduling.destroy({where: {id: scheduling.id}})
+            res.status(200).json({message: "Horário excluído!"})
+
+        }catch(error){
+            res.status(500).json({ message: 'Erro ao cancelar serviço: ' + error})
+        }
+        
+    }
+    static async cancelScheduling(req, res){
+        try{
+            const {schedulingId} = req.params
+            const user = await getClient(req, res)
+            if(!user){
+                return
+            }
+            const scheduling = await Scheduling.findOne({where: {id: schedulingId, finished: null, ClientId: user.id}})
+            if(!scheduling){
+                res.status(404).json({message: "Agendamento de horário não encontrado!"})
+                return
+            }
+            await Scheduling.update({
+                available: null, ClientId: null, ServiceId: null
+            }, {where: {id: scheduling.id, ClientId: user.id}})
+            await SchedulingEvent.destroy({where: {SchedulingId: scheduling.id, ClientId: user.id}})
+            res.status(200).json({message: "Agendamento cancelado!"})
+        }catch(error){
+            res.status(500).json({ message: 'Erro ao cancelar agendamento: ' + error})
+        }
+    }
+    static async updateAllSchedules(req, res){
+        try{
+            const currentDate = new Date()
+            const currentTime = `${currentDate.getHours()}:${currentDate.getMinutes()}:00`
+            currentDate.setHours(0,0,0,0)
+            const allSchedules = await Scheduling.findAll({where: {
+                time: {
+                    [Op.lt]: currentTime
+                },
+                date: {
+                    [Op.lte]: currentDate
+                },
+                available: true,
+                finished: null
+            }})
+            for(let schedule of allSchedules){
+                await Scheduling.update({finished: true}, {where: {
+                    id: schedule.id
+                }})
+                await SchedulingEvent.update({finished: true}, {where: {
+                    SchedulingId: schedule.id
+                }})
+            }
+            res.status(200).json({message: `${allSchedules.length} serviços foram prestados com sucesso!`})
+        }catch(error){
+            res.status(500).json({ message: 'Erro ao cancelar agendamento: ' + error})
+            console.log(error)
+        }
+    }
 }
-
-
-
-
-
 
 function generateDates(startDate, endDate) {
     const dates = [];

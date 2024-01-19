@@ -10,6 +10,9 @@ const Scheduling = conn.define('Scheduling', {
     },
     available: {
         type: DataTypes.BOOLEAN
+    },
+    finished: {
+        type: DataTypes.BOOLEAN
     }
 })
 const Client = require('./Client')
