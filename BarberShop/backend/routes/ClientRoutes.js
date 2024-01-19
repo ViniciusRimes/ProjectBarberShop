@@ -11,8 +11,8 @@ router.post('/login', [
     body('phone').notEmpty().withMessage("O campo TELEFONE não pode estar nulo!"),
     body('password').notEmpty().withMessage("O campo SENHA não pode estar nulo!"),
 ], ClientController.login)
-router.get('/getuser', verifyToken, ClientController.getClient)
-router.patch('/edituser', [
+router.get('/user', verifyToken, ClientController.getClient)
+router.patch('/edit-user', [
     body('password').optional().notEmpty().withMessage("O campo SENHA não pode estar nulo!"),
     body('confirmPassword').custom((value, {req}) =>{
         if(req.body.password){
