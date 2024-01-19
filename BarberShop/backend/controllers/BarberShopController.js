@@ -94,6 +94,38 @@ module.exports = class BarberShopController{
             res.status(400).json({message: "Erro: " + error})
         }
     }
+    static async editUser(req, res){
+        try{
+            const errors = validationResult(req)
+            if(!errors.isEmpty()){
+                res.status(400).json({message: {errors: errors.array()}})
+                return
+            }
+            const barberShop = await getBarberShop(req, res)
+            const barberShopInDb = await BarberShop.findOne({where: {id: barberShop.id}})
+
+            const {name, proprietary, email, password, phone, city, state, zipcode} = req.body
+
+            let passwordHash
+            if(password && !bcryptjs.compareSync(password, barberShopInDb.password)){
+                passwordHash = bcryptjs.hashSync(password, 10)
+            }
+            const newBarberShop = {
+                name: name || barberShopInDb.name,
+                proprietary: proprietary || barberShopInDb.proprietary,
+                email: email || barberShopInDb.email,
+                password: passwordHash || barberShop.password,
+                phone: phone || barberShopInDb.phone,
+                city: city || barberShopInDb.city,
+                state: state || barberShopInDb.state,
+                zipcode: zipcode || barberShopInDb.zipcode,
+            }
+            await BarberShop.update(newBarberShop, {where: {id: barberShopInDb.id}})
+            res.status(200).json({message: "Informações da barbearia foram editadas!"})
+        }catch(error){
+            res.status(400).json({message: "Erro: " + error})
+        }
+    }
     static async getAllClients(req, res){
         try{
             const results = await Client.findAll()
@@ -107,12 +139,8 @@ module.exports = class BarberShopController{
                     }
                 })
                 let lastScheduling
-                // let formattedDate
                 if (lastSchedulingEvent) {
                     lastScheduling = await Scheduling.findOne({where: {id: lastSchedulingEvent.SchedulingId}})
-
-                    // formattedDate = format(new Date(`${lastScheduling.date}T00:00:00Z`), 'dd-MM-yyyy')
-                    
                 }
                 clients.push({
                     name: client.name,

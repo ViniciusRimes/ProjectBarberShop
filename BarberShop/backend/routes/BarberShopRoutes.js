@@ -16,12 +16,29 @@ router.post('/register', [
     body('zipcode').notEmpty().withMessage("O campo CEP não pode ser nulo!"),
 ],
 BarberShopController.register)
+
 router.post('/login', [
     body('email').notEmpty().withMessage("O campo EMAIL não pode ser nulo!"),
     body('password').notEmpty().withMessage("O campo SENHA não pode ser nulo!")
 ], BarberShopController.login)
-router.get('/getuser', verifyIsAdmin, BarberShopController.getUser)
-router.get('/getallclients', verifyIsAdmin, BarberShopController.getAllClients)
+router.get('/user', verifyIsAdmin, BarberShopController.getUser)
+
+router.get('/all-client', verifyIsAdmin, BarberShopController.getAllClients)
+
+router.patch('/edit-user', [
+    body('password').optional().notEmpty().withMessage("O campo SENHA não pode estar nulo!"),
+    body('confirmPassword').custom((value, {req}) =>{
+        if(req.body.password){
+            if(!value){
+                throw new Error("Confirme a senha digitando novamente no campo CONFIRMAR SENHA.")
+            }else if(value !== req.body.password){
+                throw new Error("As senhas não coincidem. Digite novamente no campo CONFIRMAR SENHA.");
+
+            }
+        }
+        return true
+    })
+], verifyIsAdmin, BarberShopController.editUser)
 
 
 module.exports = router
