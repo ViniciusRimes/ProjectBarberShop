@@ -109,8 +109,14 @@ module.exports = class SchedulingController{
                 res.status(400).json({message: "O horário não possui clientes agendados, logo não é possível marcá-los como concluído!"})
                 return
             }
+            const serviceProvided = await Services.findOne({where: {id: scheduling.ServiceId}})
+
             await Scheduling.update({finished: true}, {where: {id: scheduling.id}})
             await SchedulingEvent.update({finished: true}, {where: {SchedulingId: scheduling.id}})
+            const currentDate = new Date()
+            const monthYear = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`;
+            await AccountingController.updateAccounting(req, res, monthYear, 1, serviceProvided.value)
+        
             res.status(200).json({message: "Serviço prestado com sucesso!"})
         }catch(error){
             res.status(500).json({ message: 'Erro ao atualizar serviço: ' + error})

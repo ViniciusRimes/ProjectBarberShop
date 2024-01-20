@@ -13,6 +13,8 @@ const ClientRoutes = require('./routes/ClientRoutes')
 app.use('/client', ClientRoutes )
 const ServicesRoutes = require('./routes/ServicesRoutes')
 app.use('/services', ServicesRoutes )
+const AccountingRoutes = require('./routes/AccountingRoutes')
+app.use('/accounting', AccountingRoutes )
 
 
 //models
