@@ -1,8 +1,16 @@
 const express = require("express")
 const app = express()
+const cors = require('cors')
 
 //middlewares
 app.use(express.json())
+app.use(cors({
+    origin: 'http://localhost:3000', 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204,
+    allowedHeaders: 'Content-Type,Authorization'
+}))
 
 //routes
 const BarberShopRoutes = require('./routes/BarberShopRoutes')
