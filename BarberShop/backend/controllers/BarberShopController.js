@@ -18,6 +18,10 @@ module.exports = class BarberShopController{
                 return
             }
             const {name, email, password, confirmPassword, proprietary, phone, state, city, zipcode, cnpj} = req.body
+
+            const cleanedZipCode = zipcode.replace(/\D/g, '')
+            const formattedZipCode = `${cleanedZipCode.slice(0,5)}-${cleanedZipCode.slice(5)}`
+
             let cnpjGenerate 
             if(cnpj){
                 if(cnpj.length != 14){
@@ -31,6 +35,11 @@ module.exports = class BarberShopController{
             }else{
                 cnpjGenerate = generateCnpj()
             }
+            const cleanedCnpj = cnpjGenerate.replace(/\D/g, '')
+            const formattedCnpj = `${cleanedCnpj.slice(0, 2)}.${cleanedCnpj.slice(2, 5)}.${cleanedCnpj.slice(5, 8)}/${cleanedCnpj.slice(8, 12)}-${cleanedCnpj.slice(12)}`
+            
+            cnpjGenerate = formattedCnpj
+            
             const emailExists = await BarberShop.findOne({where: {email: email}})
             if(emailExists){
                 res.status(400).json({message: "E-mail já cadastrado, faça login ou crie outra conta com um e-mail diferente!"})
@@ -53,7 +62,7 @@ module.exports = class BarberShopController{
                 passwordHash = bcryptjs.hashSync(password, salt) 
             }
             const newBarberShop = {
-                name, email, password: passwordHash, proprietary, phone, state, city, zipcode, cnpj: cnpjGenerate
+                name, email, password: passwordHash, proprietary, phone, state, city, zipcode: formattedZipCode, cnpj: cnpjGenerate
             }
     
             const user = await BarberShop.create(newBarberShop)
@@ -88,8 +97,11 @@ module.exports = class BarberShopController{
     static async getUser(req, res){
         try{
             const user = await getBarberShop(req, res)
+            if(!user){
+                return
+            }
             user.password = ''
-            res.status(200).json({message: {user: user }})
+            res.status(200).send(user)
         }catch(error){
             res.status(400).json({message: "Erro: " + error})
         }

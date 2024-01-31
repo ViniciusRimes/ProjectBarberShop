@@ -1,0 +1,24 @@
+.inputContainer{
+    margin: 0.5em;
+    padding: 0.5em;
+}
+.inputContainer input{
+    width: calc(100% - 1em);
+    color: #fff;
+    padding: 0.5em;
+    font-weight: bold;
+    border-radius: 0.5em;
+    border: 1px solid #ccc;
+}
+.inputContainer label{
+    color: #fff;
+    margin-left: 0.5em;
+    display: block;
+    text-align: start;
+    margin-bottom: 0.5em;
+}
+.inputField{
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 0.5em;
+}

@@ -13,9 +13,8 @@ router.post('/generate', [
     body('intervalMinutes').notEmpty().withMessage('O campo INTERVALO DE MINUTOS não pode ser nulo'),
 ], verifyIsAdmin, SchedulingController.generateSchedules)
 
-router.get('/available-times', [
-    body('selectedDate').notEmpty().withMessage('O campo DATA não pode ser nulo'),
-], verifyToken, SchedulingController.availableTimes)
+router.get('/available-dates', SchedulingController.availableDates)
+router.get('/available-times/:selectedDate', SchedulingController.availableTimes)
 
 router.patch('/reserve-time', [
     body('date').notEmpty().withMessage('O campo DATA não pode ser nulo'),

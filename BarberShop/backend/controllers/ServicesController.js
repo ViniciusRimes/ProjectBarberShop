@@ -62,4 +62,21 @@ module.exports = class ServicesController{
             res.status(400).json({message: "Erro: " + error})
         }   
     }
+    static async getServices(req, res) {
+        try{
+            const servicesInDb = await Services.findAll()
+            const services = []
+            for(let item of servicesInDb){
+                const newService = {
+                    name: item.name,
+                    value: item.value,
+                    duration: item.duration
+                }
+                services.push(newService)
+            }
+            await res.status(200).send(services)
+        }catch(error){
+            res.status(400).json({message: "Erro: " + error})
+        }
+    }
 }

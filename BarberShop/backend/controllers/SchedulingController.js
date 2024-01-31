@@ -1,8 +1,8 @@
 const Scheduling = require('../models/Scheduling')
 const SchedulingEvent = require('../models/SchedulingEvent')
 const {validationResult} = require("express-validator")
-const {Op} = require('sequelize')
-const {format, getDay} = require('date-fns')
+const {Op, fn, col} = require('sequelize')
+const {format} = require('date-fns')
 const getClient = require('../Autheticate/getClient')
 const Services = require('../models/Services')
 const AccountingController = require('../controllers/AccountingController')
@@ -26,14 +26,30 @@ module.exports = class SchedulingController{
             console.log(error)
         }
     }
+    static async availableDates(req, res){
+        try{
+            const datesInDb = await Scheduling.findAll({
+                attributes: [
+                    [fn('DISTINCT', col('date')), 'date']
+                ],
+                raw: true,
+            })
+            const dates = []
+            for(let item of datesInDb){
+                const newDate ={
+                    date: format(item.date, 'dd-MM-yyyy')
+                }
+                dates.push(newDate)
+            }
+            res.status(200).send(dates)
+        }catch(error){
+            res.status(500).json({ message: 'Erro ao atualizar serviço: ' + error})
+        }
+
+    }
     static async availableTimes(req, res){
         try{
-            const errors = validationResult(req)
-            if(!errors.isEmpty()){
-                res.status(400).json({message: {errors: errors.array()}})
-                return
-            }
-            const selectedDate = req.body.selectedDate
+            const selectedDate = req.params.selectedDate
         
             const availableTimes = await Scheduling.findAll({where: {
                 available: null,
@@ -42,10 +58,6 @@ module.exports = class SchedulingController{
                 }
             }})
 
-            if(availableTimes.length === 0){
-                res.status(400).json({message: "Nenhum horário disponível"})
-                return
-            }
             let allAvailableTimes =[]
             availableTimes.forEach(element => {
                 allAvailableTimes.push({
@@ -55,7 +67,7 @@ module.exports = class SchedulingController{
             });
             res.status(200).send(allAvailableTimes)
         }catch(error){
-            res.status(500).json({ message: 'Erro ao gerar agendamentos: ' + error});
+            res.status(500).json({ message: 'Erro ao buscar horários: ' + error});
             console.log(error)
         }
     }
@@ -109,8 +121,14 @@ module.exports = class SchedulingController{
                 res.status(400).json({message: "O horário não possui clientes agendados, logo não é possível marcá-los como concluído!"})
                 return
             }
+            const serviceProvided = await Services.findOne({where: {id: scheduling.ServiceId}})
+
             await Scheduling.update({finished: true}, {where: {id: scheduling.id}})
             await SchedulingEvent.update({finished: true}, {where: {SchedulingId: scheduling.id}})
+            const currentDate = new Date()
+            const monthYear = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`;
+            await AccountingController.updateAccounting(req, res, monthYear, 1, serviceProvided.value)
+        
             res.status(200).json({message: "Serviço prestado com sucesso!"})
         }catch(error){
             res.status(500).json({ message: 'Erro ao atualizar serviço: ' + error})

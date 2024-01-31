@@ -1,0 +1,19 @@
+.registerPage{
+    font-weight: 500;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    margin: 1em;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+}
+.registerPage h1{
+    margin: 0.5em auto 1em;
+}
+.registerPage p{
+    margin-bottom: 1.5em;
+}
+.preview{
+    margin: 1em;
+}

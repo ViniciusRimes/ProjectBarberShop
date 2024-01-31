@@ -11,5 +11,6 @@ router.post('/', [
 ], verifyIsAdmin, ServicesController.createService)
 router.delete('/:serviceId', verifyIsAdmin, ServicesController.deleteService)
 router.patch('/:serviceId', verifyIsAdmin, ServicesController.editService)
+router.get('/all', ServicesController.getServices)
 
 module.exports = router

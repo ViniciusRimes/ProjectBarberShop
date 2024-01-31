@@ -4,13 +4,9 @@ const {validationResult} = require("express-validator")
 const bcryptjs = require('bcryptjs')
 const getClient = require('../Autheticate/getClient')
 const {Op} = require('sequelize')
+
 module.exports = class ClientController{
     static async register(req, res){
-        /*const errors = validationResult(req)
-        if(!errors.isEmpty()){
-            res.status(400).json({message: {errors: errors.array()}})
-            return
-        }*/
         try{
             const {name, phone, password, confirmPassword} = req.body
             let img;
@@ -26,8 +22,17 @@ module.exports = class ClientController{
                 res.status(400).json({message: "As senhas devem ser iguais!"})
                 return
             }
-            const salt = bcryptjs.genSaltSync(10)
-            const passwordHash = bcryptjs.hashSync(password, salt)
+            const passwordValidate = require('../helpers/ValidatePassword')
+            const resultPassword = passwordValidate(password)
+            
+            let passwordHash
+            if(resultPassword.status == 'error'){
+                res.status(400).json({message: resultPassword.message})
+                return
+            }else{
+                const salt = bcryptjs.genSaltSync(10)
+                passwordHash = bcryptjs.hashSync(password, salt) 
+            }
 
             const user = await Client.create({name, phone, password: passwordHash, img})
             await createToken(user, "Usuário cadastrado!", res)
