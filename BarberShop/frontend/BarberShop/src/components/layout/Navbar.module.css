@@ -1,0 +1,17 @@
+.navbar{
+    margin: 2em 2em;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+}
+.navbar .menuBurguer{
+    color: #fff;
+    padding: 0.8em 1em;
+    border: none;
+    cursor: pointer;
+    transition: all ease 0.2s;
+    transform: scale(3);
+}
+.menuBurguer:hover{
+    color: #551A8B;
+}
