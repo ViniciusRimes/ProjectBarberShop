@@ -1,0 +1,14 @@
+.loginPage{
+    font-weight: 500;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: 1em 2em;
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+}
+.loginPage p {
+    margin-top: 2em;
+}
