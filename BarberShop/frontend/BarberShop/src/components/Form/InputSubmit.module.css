@@ -1,0 +1,18 @@
+.inputSubmitContainer{
+    margin-top: 3em;
+    margin-bottom: 1.5em;
+    display: flex;
+    justify-content: center;
+}
+.inputSubmitContainer input{
+    cursor: pointer;
+    font-weight: bold;
+    color: #fff;
+    padding: 0.5em 1em;
+    border-radius: 0.5em;
+    border: 1px solid #ccc;
+    transition: all ease 0.2s;
+}
+.inputSubmitContainer input:hover{
+    background-color: #551A67;
+}
