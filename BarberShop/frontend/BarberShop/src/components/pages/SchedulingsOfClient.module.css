@@ -1,0 +1,80 @@
+.schedulingsOfClientPage{
+    margin-top: 2em;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+.schedulingsStatus{
+    margin-top: 2em;
+    width: calc(100% -  4em);
+    display: flex;
+    flex-direction: column;
+}
+.schedulingsStatus div{
+    margin-top: 0.3em;
+    display: flex;
+    gap: 2em;
+}
+.listSchedulings{
+    width: calc(100% -  4em);
+    color: #fff;
+    padding: 1em;
+    margin: 1.5em 2em 1.5em 2em;
+    border: 1px solid #fff;
+    border-radius: 0.1em;
+}
+.schedulingItem{
+    display: flex;
+    align-items: center;
+   justify-content: space-around;
+   margin: 1em 0em;
+}
+.schedulingItem .cancelScheduling{
+    color: #fff;
+    background-color: #CC0000;
+    padding: 0.5em;
+    border-radius: 1em;
+    border: none;
+    font-weight: bold;
+    transition: all ease 0.2s;
+}
+.cancelScheduling:hover{
+    background-color: #990000;
+}
+.cancelSchedulingFinished{
+    opacity: 0.5;
+    pointer-events: none;
+}
+.notSchedulings{
+    margin: 1em 2em;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
+}
+.notSchedulings p{
+    text-align: center;
+    margin: 1em 2em;
+    line-height: 1.5em;
+}
+.notSchedulings .goToHomeButton{
+    margin-top: 2em;
+    cursor: pointer;
+    font-weight: bold;
+    color: #fff;
+    padding: 0.5em 1em;
+    border-radius: 0.5em;
+    border: 1px solid #ccc;
+    transition: all ease 0.2s;
+}
+.goToHomeButton a{
+    background-color: transparent;
+    color: #fff;
+}
+.goToHomeButton:hover{
+    background-color: #551A67;
+}
