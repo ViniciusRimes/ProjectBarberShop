@@ -68,6 +68,7 @@ module.exports = class ServicesController{
             const services = []
             for(let item of servicesInDb){
                 const newService = {
+                    id: item.id,
                     name: item.name,
                     value: item.value,
                     duration: item.duration

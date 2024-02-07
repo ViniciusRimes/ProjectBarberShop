@@ -12,14 +12,13 @@
 }
 .selectedTime{
     margin: 1em 2em;
-    position: relative;
 }
 .selectedTime p{
     text-align: center;
-    margin-bottom: 1em;
+    margin: 0.8em 0em;
     font-size: 0.9em;
 }
-.selectedTime .selectDates, .selectedTime .selectTimes{
+/* .selectedTime .selectDates, .selectedTime .selectTimes{
     border-radius: 0.1em;
     margin: 0.5em 0em;
     color: #fff;
@@ -27,12 +26,8 @@
     text-align: center;
     width: 100%;
     font-size: 1em;
-}
-.custom_dropdown{
-    overflow-y: auto;
-    
-}
+} */
 .selectedTime .showTimes{
-    transition: all ease 1s;
+    transition: all ease 5s;
 }
 
