@@ -19,7 +19,7 @@ export default function useAuth(){
             msg = error.response.data.message
             type = 'error'
         }
-        setFlashMessages(msg, type)
+        setFlashMessages(msg, type, 3000)
     }
     async function loginBarberShop(user){
         let msg = 'Login realizado'
@@ -31,7 +31,7 @@ export default function useAuth(){
             msg = error.response.data.message
             type = 'error'
         }
-        setFlashMessages(msg, type)
+        setFlashMessages(msg, type, 3000)
     }
     async function authUser(data, tokenName){
         setAuthenticated(true)
@@ -61,7 +61,7 @@ export default function useAuth(){
             msg = error.response.data.message
             type = 'error'
         }
-        setFlashMessages(msg, type)
+        setFlashMessages(msg, type, 3000)
     }
     async function loginClient(user){
         let msg = 'Login realizado'
@@ -73,7 +73,7 @@ export default function useAuth(){
             msg = error.response.data.message
             type = 'error'
         }
-        setFlashMessages(msg, type)
+        setFlashMessages(msg, type, 3000)
     }
     return {authenticated, registerBarberShop, loginBarberShop, logoutBarberShop, registerClient, loginClient}
 

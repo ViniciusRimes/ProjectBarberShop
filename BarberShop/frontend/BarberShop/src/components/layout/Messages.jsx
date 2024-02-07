@@ -8,14 +8,14 @@ const Messages = () => {
     const [message, setMessage] = useState("")
 
     useEffect(()=>{
-        bus.addListener('flash', ({message, type}) =>{
+        bus.addListener('flash', ({message, type, time}) =>{
             setVisibility(true)
             setMessage(message)
             setType(type)
 
             setTimeout(() => {
                 setVisibility(false)
-            }, 4000);
+            }, time);
         })
     }, [])
 

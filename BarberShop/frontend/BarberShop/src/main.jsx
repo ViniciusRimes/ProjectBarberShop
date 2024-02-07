@@ -8,6 +8,7 @@ import {LoginBarberShop} from './components/Authenticate/LoginBarberShop.jsx'
 import { RegisterClient } from './components/Authenticate/RegisterClient.jsx'
 import { LoginClient } from './components/Authenticate/LoginClient.jsx'
 import { Home } from './components/pages/Home.jsx'
+import SchedulingsOfClient from './components/pages/SchedulingsOfClient.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: 'client/login',
         element: <LoginClient/>
+      },
+      {
+        path: 'client/schedulings',
+        element: <SchedulingsOfClient/>
       }
     ]
   }
