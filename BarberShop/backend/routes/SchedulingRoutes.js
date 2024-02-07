@@ -15,6 +15,7 @@ router.post('/generate', [
 
 router.get('/available-dates', SchedulingController.availableDates)
 router.get('/available-times/:selectedDate', SchedulingController.availableTimes)
+router.get('/my-schedulings', verifyToken, SchedulingController.getMySchedulings)
 
 router.patch('/reserve-time', [
     body('date').notEmpty().withMessage('O campo DATA não pode ser nulo'),

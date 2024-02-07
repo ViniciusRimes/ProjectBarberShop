@@ -100,7 +100,19 @@ module.exports = class SchedulingController{
                 res.status(404).json({message: "Não existe nenhum serviço com este Id!"})
                 return
             }
+            const schedulingsOfClient = await Scheduling.findAll({where: {
+                date: {
+                    [Op.eq]: date
+                }, 
+                ClientId: user.id,
+                available: true
 
+            }})
+            if(schedulingsOfClient.length > 1){
+                res.status(400).json({message: 'Não é possível agendar mais de 2 horários por dia!'})
+                return
+            }
+            console.log('oi')
             await Scheduling.update({available: true, ClientId: user.id, ServiceId: serviceExists.id}, {where: {id: availableTime.id} })
             await SchedulingEvent.create({ClientId: user.id, SchedulingId: availableTime.id, ServiceId: serviceExists.id })
             res.status(200).json({message: "Horário agendado com sucesso!"})
@@ -152,8 +164,9 @@ module.exports = class SchedulingController{
     }
     static async cancelScheduling(req, res){
         try{
-            const {schedulingId} = req.params
+            const schedulingId = req.params.schedulingId
             const user = await getClient(req, res)
+            console.log(user)
             if(!user){
                 return
             }
@@ -195,6 +208,16 @@ module.exports = class SchedulingController{
                 }})
             }
             res.status(200).json({message: `${allSchedules.length} serviços foram prestados com sucesso!`})
+        }catch(error){
+            res.status(500).json({ message: 'Erro ao cancelar agendamento: ' + error})
+            console.log(error)
+        }
+    }
+    static async getMySchedulings(req, res){
+        try{
+            const client = await getClient(req, res)
+            const mySchedulings = await Scheduling.findAll({where: {ClientId: client.id}})
+            res.status(200).send(mySchedulings)
         }catch(error){
             res.status(500).json({ message: 'Erro ao cancelar agendamento: ' + error})
             console.log(error)
